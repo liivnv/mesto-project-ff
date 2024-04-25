@@ -1,10 +1,8 @@
 import '../pages/index.css';
 import {
-  initialCards,
   createCard,
   deleteCard,
-  likeCard,
-  openCard
+  likeCard
 }
 from './cards.js';
 import {
@@ -13,18 +11,38 @@ import {
 }
 from './modal.js';
 
+import {
+  initialCards
+}
+from './initialCards.js';
+
 //поиск всех модальных окон
-const popups = document.querySelectorAll('.popup');
+const popupEdit = document.querySelector('.popup_type_edit');
+const popupNewCard = document.querySelector('.popup_type_new-card');
+const popupImage = document.querySelector('.popup_type_image');
 
 //констаты, связанные с открытием модальных окон
 const openEditPopupButton = document.querySelector('.profile__edit-button');
 const openAddPopupButton = document.querySelector('.profile__add-button');
 
-//массив кнопок открытия модальных окон
-const openButtons = [openEditPopupButton, openAddPopupButton];
+//поиск всех кнопок для закрытия модальных окон
+const closeButtonPopupEdit = popupEdit.querySelector('.popup__close');
+const closeButtonPopupNewCard = popupNewCard.querySelector('.popup__close');
+const closeButtonPopupImage = popupImage.querySelector('.popup__close');
+
+const popupsListObject = [{
+  popup: popupEdit,
+  closeButton: closeButtonPopupEdit
+}, {
+  popup: popupNewCard,
+  closeButton: closeButtonPopupNewCard
+}, {
+  popup: popupImage,
+  closeButton: closeButtonPopupImage
+}]
 
 //констаты, связанные с формой изменения профиля
-const formElement = document.forms['edit-profile'];
+const profileForm = document.forms['edit-profile'];
 const nameInput = document.querySelector('.popup__input_type_name');
 const jobInput = document.querySelector('.popup__input_type_description');
 
@@ -33,23 +51,40 @@ const formElementNewPlace = document.forms['new-place'];
 const placeInput = document.querySelector('.popup__input_type_card-name');
 const linkInput = document.querySelector('.popup__input_type_url');
 
+//константы, связанные с описанием профиля
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+
+//константы, связанные с отображением модальных окон с карточками
+const imageInPopup = popupImage.querySelector('.popup__image');
+const captionInPopup = popupImage.querySelector('.popup__caption');
+
+const placesList = document.querySelector('.places__list');
+
+//функция для открытия карточки
+function openCard(evt) {
+  openModal(popupImage);
+
+  imageInPopup.src = evt.target.src;
+  imageInPopup.alt = evt.target.alt;
+  captionInPopup.textContent = evt.target.alt;
+}
+
 //функция для обработки формы изменения профиля 
-function handleFormSubmit(evt) {
+function handleProfileFormSubmit(evt) {
   evt.preventDefault();
+
   const nameValue = nameInput.value;
   const jobValue = jobInput.value;
-
-  const profileTitle = document.querySelector('.profile__title');
-  const profileDescription = document.querySelector('.profile__description');
 
   profileTitle.textContent = nameValue;
   profileDescription.textContent = jobValue;
 
-  closeModal();
+  closeModal(popupEdit);
 }
 
 //функция для обработки формы добавления нового места
-function addFormSubmit(evt) {
+function handleCardFormSubmit(evt) {
   evt.preventDefault();
 
   const placeValue = placeInput.value;
@@ -58,34 +93,45 @@ function addFormSubmit(evt) {
   const card = {
     name: placeValue,
     link: linkValue,
-    alt: 'пользовательская карточка'
+    alt: placeValue
   };
 
-  initialCards.push(card); //добавляем новую карту в исходный массив
   placesList.prepend(createCard(card, deleteCard, likeCard, openCard)); //добавляем новую карту на сайт
 
-  closeModal();
-  formElementNewPlace.reset(); //сбрасываем формы
+  closeModal(popupNewCard);
+  formElementNewPlace.reset(); //сбрасываем форму
 }
 
 //добавления карточек на сайт
-const placesList = document.querySelector('.places__list');
-for (let i = 0; i < initialCards.length; i++) {
-  placesList.append(createCard(initialCards[i], deleteCard, likeCard, openCard));
-}
+initialCards.forEach((card) => placesList.append(createCard(card, deleteCard, likeCard, openCard)));
 
 //добавления класса для плавного открытия и закрытия
-popups.forEach((popup) => popup.classList.add('popup_is-animated'));
+popupsListObject.forEach((item) => item.popup.classList.add('popup_is-animated'));
 
-//обработчики событий
-openButtons.forEach((button) => button.addEventListener('click', openModal));
+//добавление обработчика на кнопки открытия модальных окон (изменение профиля и добавление новой карточки)
+openEditPopupButton.addEventListener('click', function() {
+  openModal(popupEdit);
 
-formElement.addEventListener('submit', handleFormSubmit);
+  nameInput.value = profileTitle.textContent;
+  jobInput.value = profileDescription.textContent;
+});
 
-formElementNewPlace.addEventListener('submit', addFormSubmit);
+openAddPopupButton.addEventListener('click', function() {
+  openModal(popupNewCard);
+});
+
+//добавление обработчиков на кнопки закрытия
+popupsListObject.forEach((item) => item.closeButton.addEventListener('click', function() {
+  closeModal(item.popup);
+}));
+
+//добавление обработчиков на формы
+profileForm.addEventListener('submit', handleProfileFormSubmit);
+formElementNewPlace.addEventListener('submit', handleCardFormSubmit);
 
 //экспорт
 export {
   openEditPopupButton,
-  openAddPopupButton
+  openAddPopupButton,
+  openCard
 };

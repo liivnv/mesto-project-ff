@@ -10,7 +10,6 @@ import {
   closeModal
 }
 from './modal.js';
-
 import {
   initialCards
 }
@@ -30,6 +29,7 @@ const closeButtonPopupEdit = popupEdit.querySelector('.popup__close');
 const closeButtonPopupNewCard = popupNewCard.querySelector('.popup__close');
 const closeButtonPopupImage = popupImage.querySelector('.popup__close');
 
+//массив объектов
 const popupsListObject = [{
   popup: popupEdit,
   closeButton: closeButtonPopupEdit
@@ -108,12 +108,13 @@ initialCards.forEach((card) => placesList.append(createCard(card, deleteCard, li
 //добавления класса для плавного открытия и закрытия
 popupsListObject.forEach((item) => item.popup.classList.add('popup_is-animated'));
 
+//обновление данных в форме редактирования профиля 
+nameInput.value = profileTitle.textContent;
+jobInput.value = profileDescription.textContent;
+
 //добавление обработчика на кнопки открытия модальных окон (изменение профиля и добавление новой карточки)
 openEditPopupButton.addEventListener('click', function() {
   openModal(popupEdit);
-
-  nameInput.value = profileTitle.textContent;
-  jobInput.value = profileDescription.textContent;
 });
 
 openAddPopupButton.addEventListener('click', function() {

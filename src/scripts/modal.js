@@ -1,17 +1,17 @@
 //функция открытия модального окна
-function openModal(evt) {
-  evt.classList.add('popup_is-opened');
+function openModal(modal) {
+  modal.classList.add('popup_is-opened');
   //добавление обработчиков закрытия
   document.addEventListener('keydown', closeModalByEsc);
-  evt.addEventListener('mousedown', closeModalByOverlay);
+  modal.addEventListener('mousedown', closeModalByOverlay);
 }
 
 //функция для закрытия модального окна
-function closeModal(evt) {
-  evt.classList.remove('popup_is-opened');
+function closeModal(modal) {
+  modal.classList.remove('popup_is-opened');
   //удаление обработчиков закрытия
   document.removeEventListener('keydown', closeModalByEsc);
-  evt.removeEventListener('mousedown', closeModalByOverlay);
+  modal.removeEventListener('mousedown', closeModalByOverlay);
 }
 
 //функция для закрытия модального окна по кнопке esc

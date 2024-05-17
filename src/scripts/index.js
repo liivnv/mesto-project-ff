@@ -109,14 +109,18 @@ function openCard(evt) {
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
 
-  userInfo.name = nameInput.value;
-  userInfo.about = jobInput.value;
-
-  profileTitle.textContent = userInfo.name;
-  profileDescription.textContent = userInfo.about;
-
   renderLoading(true, evt.target); //отображение загрузки
-  changeProfileData(userInfo.name, userInfo.about, evt.target) //изменение данных профиля на сервере
+  changeProfileData(nameInput.value, jobInput.value, evt.target)
+    .then ((user) => {
+      userInfo.name = user.name;
+      userInfo.about = user.about;
+
+      profileTitle.textContent = userInfo.name;
+      profileDescription.textContent = userInfo.about;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   closeModal(popupEdit);
 };
@@ -129,15 +133,16 @@ function handleCardFormSubmit(evt) {
   const linkValue = linkInput.value;
 
   renderLoading(true, evt.target); //отображение загрузки
-
-  Promise.resolve(createNewCard(placeValue, linkValue, evt.target))
+  createNewCard(placeValue, linkValue, evt.target)
     .then((card) => {
       let cardFromServer = card;
       placesList.prepend(createCard(cardFromServer, userInfo.id, deleteCard, likeCard, openCard)); //добавляем новую карточку на сайт
+    })
+    .catch((err) => {
+      console.log(err);
     });
 
-  closeModal(popupNewCard);
-
+  closeModal(popupNewCard); //закрытие окна
   formElementNewPlace.reset(); //сбрасываем форму
   clearValidation(formElementNewPlace, validationConfig); //очищаем валидацию
 };
@@ -146,15 +151,17 @@ function handleCardFormSubmit(evt) {
 function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
 
-  userInfo.avatar = linkAvatarInput.value;
-
   renderLoading(true, evt.target); //отображение начала загрузки
-  changeAvatar(userInfo.avatar, evt.target);
+  changeAvatar(linkAvatarInput.value, evt.target)
+    .then ((user) => {
+      userInfo.avatar = user.avatar;
+      avatar.style.backgroundImage = `url(${userInfo.avatar})`;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
-  avatar.style.backgroundImage = `url(${userInfo.avatar})`;
-
-  closeModal(popupAvatar);
-
+  closeModal(popupAvatar); //закрытие окна
   avatarForm.reset(); //сброс формы
   clearValidation(avatarForm, validationConfig); //очистка валидации 
 }
@@ -221,6 +228,9 @@ Promise.all([getUserInfo(), getInitialCards()])
 
     initialCards = cards;
     initialCards.forEach((card) => placesList.append(createCard(card, userInfo.id, deleteCard, likeCard, openCard)));
+  })
+  .catch((err) => {
+    console.log(err);
   });
 
 //экспорт

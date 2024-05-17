@@ -1,8 +1,4 @@
 import {
-  openCard
-}
-from './index.js';
-import {
   deleteCardFromCardsList,
   addLike,
   deleteLike
@@ -60,8 +56,13 @@ function createCard(card, userId, deleteCard, likeCard, openCard) {
 //функция для удаления карточки
 function deleteCard(button, cardId) {
   const placesItem = button.closest('.places__item');
-  deleteCardFromCardsList(cardId);
-  placesItem.remove();
+  deleteCardFromCardsList(cardId)
+    .then (() => {
+      placesItem.remove();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 //функция для лайка 
@@ -69,15 +70,21 @@ function likeCard(button, card, countLikes) {
   button.classList.toggle('card__like-button_is-active');
 
   if (button.classList.contains('card__like-button_is-active')) {
-    Promise.resolve(addLike(card._id))
+    addLike(card._id)
       .then((card) => {
         changeCountLikes(card, countLikes);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
   else {
-    Promise.resolve(deleteLike(card._id))
+    deleteLike(card._id)
       .then((card) => {
         changeCountLikes(card, countLikes);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
 };

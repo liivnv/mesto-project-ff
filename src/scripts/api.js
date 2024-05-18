@@ -1,8 +1,3 @@
-import {
-  renderLoading
-}
-from './index.js'
-
 const config = {
   baseUrl: 'https://nomoreparties.co/v1/wff-cohort-14',
   headers: {
@@ -21,9 +16,6 @@ export const getUserInfo = () => {
       }
 
       return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .catch((err) => {
-      console.log(err);
     });
 };
 
@@ -37,9 +29,6 @@ export const getInitialCards = () => {
       }
 
       return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .catch((err) => {
-      console.log(err);
     });
 };
 
@@ -58,11 +47,7 @@ export const changeProfileData = (userName, userAbout, form) => {
       }
 
       return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-    .finally(() => renderLoading(false, form));
+    });
 };
 
 export const createNewCard = (cardName, cardLink, form) => {
@@ -80,11 +65,7 @@ export const createNewCard = (cardName, cardLink, form) => {
       }
 
       return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-    .finally(() => renderLoading(false, form));
+    });
 };
 
 export const changeAvatar = (url, form) => {
@@ -101,11 +82,7 @@ export const changeAvatar = (url, form) => {
       }
 
       return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-    .finally(() => renderLoading(false, form));
+    });
 };
 
 export const deleteCardFromCardsList = (cardId) => {
@@ -119,9 +96,6 @@ export const deleteCardFromCardsList = (cardId) => {
       }
 
       return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .catch((err) => {
-      console.log(err);
     });
 };
 
@@ -136,9 +110,6 @@ export const addLike = (cardId) => {
       }
 
       return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .catch((err) => {
-      console.log(err);
     });
 };
 
@@ -153,8 +124,5 @@ export const deleteLike = (cardId) => {
       }
 
       return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .catch((err) => {
-      console.log(err);
     });
 };

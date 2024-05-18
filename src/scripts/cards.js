@@ -67,12 +67,14 @@ function deleteCard(button, cardId) {
 
 //функция для лайка 
 function likeCard(button, card, countLikes) {
-  button.classList.toggle('card__like-button_is-active');
+  //button.classList.toggle('card__like-button_is-active');
 
-  if (button.classList.contains('card__like-button_is-active')) {
+  if (!button.classList.contains('card__like-button_is-active')) {
     addLike(card._id)
       .then((card) => {
-        changeCountLikes(card, countLikes);
+        if (typeof card === 'object') {
+          changeCountLikes(card, countLikes, button);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -81,7 +83,9 @@ function likeCard(button, card, countLikes) {
   else {
     deleteLike(card._id)
       .then((card) => {
-        changeCountLikes(card, countLikes);
+        if (typeof card === 'object') {
+          changeCountLikes(card, countLikes, button);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -90,7 +94,8 @@ function likeCard(button, card, countLikes) {
 };
 
 //функция для изменения количества лайков
-function changeCountLikes(card, countLikes) {
+function changeCountLikes(card, countLikes, button) {
+  button.classList.toggle('card__like-button_is-active');
   if (card.likes.length !== 0) {
     countLikes.style.display = 'block';
     countLikes.textContent = card.likes.length;

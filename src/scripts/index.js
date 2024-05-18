@@ -89,10 +89,10 @@ const validationConfig = {
 }
 
 //объект пользователя
-let userInfo;
+const userInfo = {};
 
 //массив карточек с сервера
-let initialCards;
+//let initialCards;
 
 const placesList = document.querySelector('.places__list');
 
@@ -112,17 +112,20 @@ function handleProfileFormSubmit(evt) {
   renderLoading(true, evt.target); //отображение загрузки
   changeProfileData(nameInput.value, jobInput.value, evt.target)
     .then ((user) => {
-      userInfo.name = user.name;
-      userInfo.about = user.about;
+      if (typeof user === 'object') {
+        userInfo.name = user.name;
+        userInfo.about = user.about;
 
-      profileTitle.textContent = userInfo.name;
-      profileDescription.textContent = userInfo.about;
+        profileTitle.textContent = userInfo.name;
+        profileDescription.textContent = userInfo.about;
+        
+        closeModal(popupEdit);
+      }
     })
     .catch((err) => {
       console.log(err);
-    });
-
-  closeModal(popupEdit);
+    })
+    .finally(() => renderLoading(false, evt.target));
 };
 
 //функция для обработки формы добавления нового места 
@@ -135,16 +138,18 @@ function handleCardFormSubmit(evt) {
   renderLoading(true, evt.target); //отображение загрузки
   createNewCard(placeValue, linkValue, evt.target)
     .then((card) => {
-      let cardFromServer = card;
-      placesList.prepend(createCard(cardFromServer, userInfo.id, deleteCard, likeCard, openCard)); //добавляем новую карточку на сайт
+      if (typeof card === 'object') {
+        const cardFromServer = card;
+        placesList.prepend(createCard(cardFromServer, userInfo.id, deleteCard, likeCard, openCard)); //добавляем новую карточку на сайт
+        closeModal(popupNewCard); //закрытие окна
+        formElementNewPlace.reset(); //сбрасываем форму
+        clearValidation(formElementNewPlace, validationConfig); //очищаем валидацию
+      }
     })
     .catch((err) => {
       console.log(err);
-    });
-
-  closeModal(popupNewCard); //закрытие окна
-  formElementNewPlace.reset(); //сбрасываем форму
-  clearValidation(formElementNewPlace, validationConfig); //очищаем валидацию
+    })
+    .finally(() => renderLoading(false, evt.target));
 };
 
 //функция для обработки изменения аватара
@@ -154,16 +159,18 @@ function handleAvatarFormSubmit(evt) {
   renderLoading(true, evt.target); //отображение начала загрузки
   changeAvatar(linkAvatarInput.value, evt.target)
     .then ((user) => {
-      userInfo.avatar = user.avatar;
-      avatar.style.backgroundImage = `url(${userInfo.avatar})`;
+      if (typeof user === 'object') {
+        userInfo.avatar = user.avatar;
+        avatar.style.backgroundImage = `url(${userInfo.avatar})`;
+        closeModal(popupAvatar); //закрытие окна
+        avatarForm.reset(); //сброс формы
+        clearValidation(avatarForm, validationConfig); //очистка валидации
+      } 
     })
     .catch((err) => {
       console.log(err);
-    });
-
-  closeModal(popupAvatar); //закрытие окна
-  avatarForm.reset(); //сброс формы
-  clearValidation(avatarForm, validationConfig); //очистка валидации 
+    })
+    .finally(() => renderLoading(false, evt.target));
 }
 
 //добавление лоадера
@@ -215,18 +222,16 @@ enableValidation(validationConfig);
 //загрузка данных с сервера (пользовательская информация и карточки), отображение на странице
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([user, cards]) => {
-    userInfo = {
-      avatar: user.avatar,
-      id: user._id,
-      name: user.name,
-      about: user.about
-    };
+    userInfo.avatar = user.avatar;
+    userInfo.id = user._id;
+    userInfo.name = user.name;
+    userInfo.about = user.about;
 
     avatar.style.backgroundImage = `url(${userInfo.avatar})`;
     profileTitle.textContent = userInfo.name;
     profileDescription.textContent = userInfo.about;
 
-    initialCards = cards;
+    const initialCards = cards;
     initialCards.forEach((card) => placesList.append(createCard(card, userInfo.id, deleteCard, likeCard, openCard)));
   })
   .catch((err) => {
